@@ -20,7 +20,7 @@ Prerequisets:
 By default, the server looks for a `config.json` file in `/etc/grpox/config.json`, this can be changed by setting the environment variable `CONFIG_LOCATION=/path/to/config/file/config.json`.
 
 ### Layout
-An example layout can be found in (config.json)[./config.json]
+An example layout can be found in [config.json](./config.json)
 ```
 {
     "minecraft": {
