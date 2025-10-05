@@ -1,4 +1,4 @@
-use log::{error, info, warn};
+use log::{info, warn};
 use std::io;
 use std::sync::Arc;
 use tokio::io::AsyncWriteExt;

@@ -1,4 +1,3 @@
-use serde::Serialize;
 use serde_json;
 use std::collections::HashMap;
 use std::env;
@@ -15,6 +14,7 @@ pub enum Games {
 #[derive(serde::Deserialize, Debug, serde::Serialize)]
 pub struct GameMap {
     mapping: HashMap<Games, ServerMap>,
+    pub config_location: String,
 }
 
 #[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
@@ -23,28 +23,30 @@ pub struct ServerMap {
 }
 
 impl GameMap {
-    pub fn test() {
-        let mut sMap = HashMap::<String, (String, usize)>::new();
-        let mut gMap = HashMap::<Games, ServerMap>::new();
-        sMap.insert("localhost".to_string(), ("127.0.0.1".to_string(), 25565));
-        let servermap = ServerMap { mapping: sMap };
-        gMap.insert(Games::Minecraft, servermap);
-        let gamemap = GameMap { mapping: gMap };
-        println!("{:?}", serde_json::to_string(&gamemap).unwrap());
-    }
+    // pub fn test() {
+    //     let mut sMap = HashMap::<String, (String, usize)>::new();
+    //     let mut gMap = HashMap::<Games, ServerMap>::new();
+    //     sMap.insert("localhost".to_string(), ("127.0.0.1".to_string(), 25565));
+    //     let servermap = ServerMap { mapping: sMap };
+    //     gMap.insert(Games::Minecraft, servermap);
+    //     let gamemap = GameMap { mapping: gMap };
+    //     println!("{:?}", serde_json::to_string(&gamemap).unwrap());
+    // }
     pub fn from_config() -> Result<GameMap, Error> {
-        let config_location =
-            env::var("CONFIG_LOCATION").unwrap_or("/etc/gprox/config.json".to_string());
+        let config_location = env::var("CONFIG_LOCATION").unwrap_or("/etc/gproxy/".to_string());
 
-        let config_string = fs::read_to_string(config_location)?;
+        let config_string = fs::read_to_string(config_location.clone() + "config.json")?;
 
         let config = serde_json::from_str(&config_string).unwrap();
 
-        Ok(GameMap { mapping: config })
+        Ok(GameMap {
+            mapping: config,
+            config_location: config_location,
+        })
     }
 
-    pub fn get_games(&self) -> Vec<&Games> {
-        Vec::from_iter(self.mapping.keys())
+    pub fn get_games(&self) -> Vec<Games> {
+        self.mapping.keys().cloned().collect::<Vec<Games>>()
     }
 
     pub fn get_mapping(&self, game: &Games) -> Result<ServerMap, MappingError> {
