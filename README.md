@@ -17,7 +17,7 @@ Prerequisets:
 
 ## Config
 ### Location
-By default, the server looks for a `config.json` file in `/etc/grpox/config.json`, this can be changed by setting the environment variable `CONFIG_LOCATION=/path/to/config/file/`. It must be a directory containing the file `config.json`.
+By default, the server looks for a `config.json` file in `/etc/grpoxy/config.json`, this can be changed by setting the environment variable `CONFIG_LOCATION=/path/to/config/file/`. It must be a directory containing the file `config.json`.
 
 ### Layout
 An example layout can be found in [config.json](./config.json)
