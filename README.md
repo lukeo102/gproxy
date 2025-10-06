@@ -33,3 +33,27 @@ An example layout can be found in [config.json](./config.json)
     }
 }
 ```
+
+# How it works
+## Packet inspection for the hostname
+The first Vanilla and Fabric Minecraft packet sent from the client to the server is a handshake packet that contains a variable length hostname block at byte position 6, this length is determined by a byte at position 5.
+We can then extract the hostname from the packet by doing the following:
+```rust
+// See lines 43 & 44 in src/minecraft/minecraft.rs
+address_segment_len = packet[4]
+packet[5..address_segment_len + 5]
+```
+
+Following this we can match the hostname from the packet to one of the hostnames in the config.
+
+This only covers Vanilla and Fabric servers, for Forge servers they include the version of the Forge mod loader they use appended to the end of the hostname block.
+This only minorly changes how we extract the hostname to exclude this metadata:
+```rust
+// See lines 47 & 48 in src/minecraft/minecraft.rs
+address_segment_len = packet[4]
+packet[5..address_segment_len]
+```
+
+## Wont this break encryption?
+This proxy only inspects the first packet, after which it is handed off to a simple TCP proxy (seen in lines 100 to 136 in src/proxy.rs).
+This first packet is not encrypted, and as the proxy does not inspect other packets, just passes them between the client and server, it does not interfere with the encryption.
